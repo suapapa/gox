@@ -1,0 +1,45 @@
+package cmd
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/spf13/cobra"
+	"github.com/suapapa/gox/pkg/runner"
+)
+
+// Execute runs the root command.
+func Execute() error {
+	var generate bool
+
+	var rootCmd = &cobra.Command{
+		Use:   "gox [gox-flags] <package>[@version] [args...]",
+		Short: "Go version of npx",
+		Long: `gox (Go Execute) is a tool that allows you to run Go packages as commands without having to install them globally. 
+It automatically downloads the specified package, compiles it into a local cache, and executes it.`,
+		Example: `  gox github.com/suapapa/gox --help
+  gox golang.org/x/tools/cmd/goimports@latest -w main.go
+  gox --generate github.com/foo/bar@v1.2.3`,
+		Args: cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pkgWithVersion := args[0]
+			pkgArgs := args[1:]
+
+			// Initialize the runner with default options.
+			r, err := runner.NewRunner(
+				runner.WithGenerate(generate),
+			)
+			if err != nil {
+				return fmt.Errorf("initialization error: %w", err)
+			}
+
+			// Execute using background context.
+			return r.Run(context.Background(), pkgWithVersion, pkgArgs)
+		},
+	}
+
+	rootCmd.Flags().BoolVarP(&generate, "generate", "g", false, "run go generate before building")
+	rootCmd.Flags().SetInterspersed(false)
+
+	return rootCmd.Execute()
+}

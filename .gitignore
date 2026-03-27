@@ -1,0 +1,8 @@
+.gitignore
+
+# Added by goreleaser init:
+dist/
+
+.agents/
+skills-lock.json
+gox
