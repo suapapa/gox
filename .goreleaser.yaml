@@ -45,6 +45,16 @@ changelog:
       - "^docs:"
       - "^test:"
 
+brews:
+  - repository:
+      owner: suapapa
+      name: homebrew-tools
+    directory: Formula
+    homepage: "https://github.com/suapapa/gox"
+    description: "Go version of npx - Execute Go binaries directly from source"
+    test: |
+      system "#{bin}/gox help"
+
 release:
   footer: >-
 

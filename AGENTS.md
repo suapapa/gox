@@ -40,8 +40,11 @@ This document provides guidelines and context for AI agents working on the `gox`
 5.  **Document**: Update `README.md` and `AGENTS.md` as required.
 
 ## Release Workflow
-The project uses `goreleaser` for automated GitHub releases.
+The project uses `goreleaser` for automated GitHub releases and Homebrew formula management.
 
 - **Check config**: `make release-check`
 - **Snapshot release (local test)**: `make snapshot`
 - **Full release (requires tag and GITHUB_TOKEN)**: `make release`
+
+> [!NOTE]
+> The release process automatically pushes updated Homebrew formulae to [suapapa/homebrew-tools](https://github.com/suapapa/homebrew-tools).

@@ -10,6 +10,14 @@
 - Avoids name collisions by using unique directories for each package.
 - Supports versioning (e.g., `@v1.2.3` or `@latest`).
 
+## Installation
+
+### Homebrew
+```bash
+brew install suapapa/tools/gox
+```
+(Alternatively: `brew tap suapapa/tools && brew install gox`)
+
 ## Usage
 ```bash
 # Run a tool at the latest version
