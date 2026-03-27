@@ -28,6 +28,8 @@ This document provides guidelines and context for AI agents working on the `gox`
   - `runner/`: Logic for resolving, building, and running Go packages.
 - `main.go`: Entry point for the application, delegates to `cmd`.
 - `LICENSE`: Project license (MIT).
+- `Makefile`: Standard build, test, and release tasks.
+- `.goreleaser.yaml`: GoReleaser configuration for GitHub releases.
 - `gox_plan.md`: The initial project implementation plan.
 
 ## Workflow
@@ -36,3 +38,10 @@ This document provides guidelines and context for AI agents working on the `gox`
 3.  **Implement**: Apply changes using the defined tools.
 4.  **Verify**: Run tests and verify the changes manually.
 5.  **Document**: Update `README.md` and `AGENTS.md` as required.
+
+## Release Workflow
+The project uses `goreleaser` for automated GitHub releases.
+
+- **Check config**: `make release-check`
+- **Snapshot release (local test)**: `make snapshot`
+- **Full release (requires tag and GITHUB_TOKEN)**: `make release`

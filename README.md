@@ -24,3 +24,8 @@ gox github.com/golangci/golangci-lint/cmd/golangci-lint@latest --version
 
 ## Development and Contributions
 AI agents and contributors should refer to [AGENTS.md](file:///Users/suapapa/ws_suapapa/gox/AGENTS.md) for development guidelines, project structure, and mandatory documentation updates.
+
+You can use the provided `Makefile` for common tasks:
+- `make build`: Build the binary locally.
+- `make test`: Run tests.
+- `make snapshot`: Create a local snapshot release using `goreleaser`.
