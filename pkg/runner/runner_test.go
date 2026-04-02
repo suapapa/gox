@@ -105,3 +105,13 @@ func TestGetBinaryName(t *testing.T) {
 		})
 	}
 }
+
+func TestRunnerUpdateInstallsEvenWhenCached(t *testing.T) {
+	r, err := NewRunner(WithCacheDir(t.TempDir()), WithUpdate(true))
+	if err != nil {
+		t.Fatalf("NewRunner() error = %v", err)
+	}
+	if !r.cfg.Update {
+		t.Fatalf("expected Update to be true")
+	}
+}

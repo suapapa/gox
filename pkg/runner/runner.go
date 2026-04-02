@@ -20,6 +20,7 @@ type Config struct {
 	CacheDir string
 	Output   io.Writer // Where to write installation progress
 	Generate bool      // Run go generate before build
+	Update   bool      // Force reinstall even when cached binary exists
 }
 
 // Runner implements the Go package runner logic.
@@ -48,6 +49,13 @@ func WithOutput(w io.Writer) Option {
 func WithGenerate(g bool) Option {
 	return func(c *Config) {
 		c.Generate = g
+	}
+}
+
+// WithUpdate sets whether to force reinstall even if the binary is cached.
+func WithUpdate(u bool) Option {
+	return func(c *Config) {
+		c.Update = u
 	}
 }
 
@@ -89,8 +97,12 @@ func (r *Runner) Run(ctx context.Context, pkgWithVersion string, args []string) 
 	binName := getBinaryName(pkg)
 	binPath := filepath.Join(binDir, binName)
 
-	// Check if already installed in the cache.
-	if _, err := os.Stat(binPath); os.IsNotExist(err) {
+	// Check if already installed in the cache unless update was requested.
+	if r.cfg.Update {
+		if err := r.install(ctx, pkg, version, binDir); err != nil {
+			return err
+		}
+	} else if _, err := os.Stat(binPath); os.IsNotExist(err) {
 		if err := r.install(ctx, pkg, version, binDir); err != nil {
 			return err
 		}
@@ -100,7 +112,11 @@ func (r *Runner) Run(ctx context.Context, pkgWithVersion string, args []string) 
 }
 
 func (r *Runner) install(ctx context.Context, pkg, version, binDir string) error {
-	fmt.Fprintf(r.cfg.Output, "gox: installing %s@%s...\n", pkg, version)
+	action := "installing"
+	if r.cfg.Update {
+		action = "updating"
+	}
+	fmt.Fprintf(r.cfg.Output, "gox: %s %s@%s...\n", action, pkg, version)
 
 	binName := getBinaryName(pkg)
 	if binName == "." || binName == ".." {

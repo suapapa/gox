@@ -15,6 +15,7 @@ This document provides guidelines and context for AI agents working on the `gox`
 - Support GitHub shorthand resolution: `owner/repo` and `owner/repo/...` expand to `github.com/owner/repo...`.
 - Intelligent caching of built binaries in `os.UserCacheDir() + "/gox/bin/"`.
 - Automatic installation of missing tools into the managed cache.
+- Forced reinstall/update flow with `-u` / `--update` for refreshing cached tools.
 
 ## Development Guidelines for Agents
 - **Go Best Practices**: Follow idiomatic Go patterns. Use `golang-pro` skill instructions for reference.
@@ -26,7 +27,7 @@ This document provides guidelines and context for AI agents working on the `gox`
 ## File Structure
 - `cmd/root.go`: CLI command definitions (Cobra).
 - `pkg/`: Core logic and packages.
-  - `runner/`: Logic for resolving, building, and running Go packages.
+  - `runner/`: Logic for resolving, building, caching, updating, and running Go packages.
 - `main.go`: Entry point for the application, delegates to `cmd`.
 - `LICENSE`: Project license (MIT).
 - `Makefile`: Standard build, test, and release tasks.
