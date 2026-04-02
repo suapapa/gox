@@ -25,6 +25,7 @@ This document provides guidelines and context for AI agents working on the `gox`
 - **Testing**: Maintain high test coverage with unit and integration tests.
 
 ## File Structure
+- `_assets/`: README media (e.g. hero image, before/after demo GIFs).
 - `cmd/root.go`: CLI command definitions (Cobra).
 - `pkg/`: Core logic and packages.
   - `runner/`: Logic for resolving, building, caching, updating, and running Go packages.

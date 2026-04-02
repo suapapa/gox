@@ -4,6 +4,12 @@
 
 `gox` is a Go tool that allows you to execute Go binaries directly from their source repositories, without global installation. It provides a similar experience to `npx` in the Node.js ecosystem.
 
+## Before / after
+
+| Before gox | With gox |
+| ---------- | -------- |
+| ![Before gox](_assets/before_gox.gif) | ![With gox](_assets/gox.gif) |
+
 ## Features
 - Runs Go binaries without global installation.
 - Caches built binaries in `~/.cache/gox/bin/` to speed up subsequent runs.
