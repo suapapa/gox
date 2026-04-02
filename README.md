@@ -14,9 +14,9 @@
 
 ### Homebrew
 ```bash
-brew install suapapa/tools/gox
+brew install --cask suapapa/tools/gox
 ```
-(Alternatively: `brew tap suapapa/tools && brew install gox`)
+(Alternatively: `brew tap suapapa/tools && brew install --cask gox`)
 
 ## Usage
 ```bash
