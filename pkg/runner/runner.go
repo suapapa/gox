@@ -21,6 +21,7 @@ type Config struct {
 	Output   io.Writer // Where to write installation progress
 	Generate bool      // Run go generate before build
 	Update   bool      // Force reinstall even when cached binary exists
+	Verbose  bool      // Print cache/version/binary details and install steps
 }
 
 // Runner implements the Go package runner logic.
@@ -56,6 +57,13 @@ func WithGenerate(g bool) Option {
 func WithUpdate(u bool) Option {
 	return func(c *Config) {
 		c.Update = u
+	}
+}
+
+// WithVerbose sets whether to print verbose progress information.
+func WithVerbose(v bool) Option {
+	return func(c *Config) {
+		c.Verbose = v
 	}
 }
 
@@ -97,15 +105,32 @@ func (r *Runner) Run(ctx context.Context, pkgWithVersion string, args []string) 
 	binName := getBinaryName(pkg)
 	binPath := filepath.Join(binDir, binName)
 
+	if r.cfg.Verbose {
+		fmt.Fprintf(r.cfg.Output, "gox: package=%s version=%s\n", pkg, version)
+		fmt.Fprintf(r.cfg.Output, "gox: cache-dir=%s\n", r.cfg.CacheDir)
+		fmt.Fprintf(r.cfg.Output, "gox: bin-dir=%s\n", binDir)
+		fmt.Fprintf(r.cfg.Output, "gox: binary=%s\n", binPath)
+	}
+
 	// Check if already installed in the cache unless update was requested.
 	if r.cfg.Update {
+		if r.cfg.Verbose {
+			fmt.Fprintf(r.cfg.Output, "gox: update requested; refreshing cached binary\n")
+		}
 		if err := r.install(ctx, pkg, version, binDir); err != nil {
 			return err
 		}
 	} else if _, err := os.Stat(binPath); os.IsNotExist(err) {
+		if r.cfg.Verbose {
+			fmt.Fprintf(r.cfg.Output, "gox: cache miss; binary not found, installing\n")
+		}
 		if err := r.install(ctx, pkg, version, binDir); err != nil {
 			return err
 		}
+	} else if err != nil {
+		return fmt.Errorf("failed to inspect cached binary: %w", err)
+	} else if r.cfg.Verbose {
+		fmt.Fprintf(r.cfg.Output, "gox: cache hit; reusing cached binary\n")
 	}
 
 	return r.execute(ctx, binPath, args)
@@ -132,6 +157,11 @@ func (r *Runner) install(ctx context.Context, pkg, version, binDir string) error
 		return r.generateAndBuild(ctx, pkg, version, binPath)
 	}
 
+	if r.cfg.Verbose {
+		fmt.Fprintf(r.cfg.Output, "gox: step 1/3 ensure cache directory exists\n")
+		fmt.Fprintf(r.cfg.Output, "gox: step 2/3 run GOBIN=%s go install %s@%s\n", binDir, pkg, version)
+	}
+
 	// Using exec.CommandContext to allow for context cancellation/timeout.
 	cmd := exec.CommandContext(ctx, "go", "install", pkg+"@"+version)
 	cmd.Env = append(os.Environ(), "GOBIN="+binDir)
@@ -141,6 +171,10 @@ func (r *Runner) install(ctx context.Context, pkg, version, binDir string) error
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to install %s@%s: %w", pkg, version, err)
 	}
+
+	if r.cfg.Verbose {
+		fmt.Fprintf(r.cfg.Output, "gox: step 3/3 binary ready at %s\n", binPath)
+	}
 	return nil
 }
 
@@ -149,6 +183,9 @@ func (r *Runner) generateAndBuild(ctx context.Context, pkg, version, binPath str
 	// if it's a local path, or try to download and run if it's remote.
 
 	// TODO: fully support remote go generate by downloading source to temp
+	if r.cfg.Verbose {
+		fmt.Fprintf(r.cfg.Output, "gox: step 1/3 running go generate\n")
+	}
 	fmt.Fprintf(r.cfg.Output, "gox: running go generate...\n")
 
 	genCmd := exec.CommandContext(ctx, "go", "generate", "./...")
@@ -162,6 +199,9 @@ func (r *Runner) generateAndBuild(ctx context.Context, pkg, version, binPath str
 		return fmt.Errorf("failed to run go generate: %w", err)
 	}
 
+	if r.cfg.Verbose {
+		fmt.Fprintf(r.cfg.Output, "gox: step 2/3 building binary\n")
+	}
 	fmt.Fprintf(r.cfg.Output, "gox: building %s...\n", pkg)
 	buildCmd := exec.CommandContext(ctx, "go", "build", "-o", binPath, pkg)
 	buildCmd.Stderr = r.cfg.Output
@@ -170,6 +210,9 @@ func (r *Runner) generateAndBuild(ctx context.Context, pkg, version, binPath str
 		return fmt.Errorf("failed to build %s: %w", pkg, err)
 	}
 
+	if r.cfg.Verbose {
+		fmt.Fprintf(r.cfg.Output, "gox: step 3/3 binary ready at %s\n", binPath)
+	}
 	return nil
 }
 
@@ -178,6 +221,14 @@ func isLocalPath(path string) bool {
 }
 
 func (r *Runner) execute(ctx context.Context, binPath string, args []string) error {
+	if r.cfg.Verbose {
+		if len(args) > 0 {
+			fmt.Fprintf(r.cfg.Output, "gox: executing %s %s\n", binPath, strings.Join(args, " "))
+		} else {
+			fmt.Fprintf(r.cfg.Output, "gox: executing %s\n", binPath)
+		}
+	}
+
 	cmd := exec.CommandContext(ctx, binPath, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -220,6 +271,6 @@ func normalizePackagePath(pkg string) string {
 }
 
 func getBinaryName(pkg string) string {
-	parts := strings.Split(pkg, "/")
+	parts := strings.Split(strings.TrimRight(pkg, "/"), "/")
 	return parts[len(parts)-1]
 }

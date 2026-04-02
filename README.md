@@ -16,6 +16,7 @@
 - Avoids name collisions by using unique directories for each package.
 - Supports versioning (e.g., `@v1.2.3` or `@latest`).
 - Supports forced reinstall/update with `-u` / `--update`.
+- Supports verbose logging with `-v` / `--verbose` to show version, cache paths, binary path, cache hits, and install/update steps.
 
 ## Installation
 
@@ -33,11 +34,41 @@ gox <package-path>[@version] [args...]
 # Force reinstall/update even if it is already cached
 gox -u <package-path>[@version] [args...]
 
+# Print version/cache/binary details and install steps
+gox -v <package-path>[@version] [args...]
+
 # GitHub shortcuts: owner/repo paths implicitly expand to github.com/owner/repo
 gox suapapa/gox --help
 
 # Full import paths still work as-is
 gox github.com/golangci/golangci-lint/cmd/golangci-lint@latest --version
+```
+
+## Verbose output
+With `-v`, `gox` prints:
+- Resolved package path and version
+- Cache root and package-specific cache directory
+- Final cached binary path
+- Whether the run is a cache hit, cache miss, or forced update
+- Per-step install/build progress for first-time installs and updates
+
+Example:
+```bash
+gox -v golang.org/x/tools/cmd/goimports@latest --version
+```
+
+Example output:
+```text
+gox: package=golang.org/x/tools/cmd/goimports version=latest
+gox: cache-dir=/home/user/.cache/gox
+gox: bin-dir=/home/user/.cache/gox/bin/golang.org_x_tools_cmd_goimports@latest
+gox: binary=/home/user/.cache/gox/bin/golang.org_x_tools_cmd_goimports@latest/goimports
+gox: cache miss; binary not found, installing
+gox: installing golang.org/x/tools/cmd/goimports@latest...
+gox: step 1/3 ensure cache directory exists
+gox: step 2/3 run GOBIN=/home/user/.cache/gox/bin/golang.org_x_tools_cmd_goimports@latest go install golang.org/x/tools/cmd/goimports@latest
+gox: step 3/3 binary ready at /home/user/.cache/gox/bin/golang.org_x_tools_cmd_goimports@latest/goimports
+gox: executing /home/user/.cache/gox/bin/golang.org_x_tools_cmd_goimports@latest/goimports --version
 ```
 
 ## Update semantics

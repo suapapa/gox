@@ -16,6 +16,7 @@ This document provides guidelines and context for AI agents working on the `gox`
 - Intelligent caching of built binaries in `os.UserCacheDir() + "/gox/bin/"`.
 - Automatic installation of missing tools into the managed cache.
 - Forced reinstall/update flow with `-u` / `--update` for refreshing cached tools.
+- Verbose execution tracing with `-v` / `--verbose` for cache inspection and install/update step visibility.
 
 ## Development Guidelines for Agents
 - **Go Best Practices**: Follow idiomatic Go patterns. Use `golang-pro` skill instructions for reference.
@@ -23,12 +24,13 @@ This document provides guidelines and context for AI agents working on the `gox`
 - **Error Handling**: Ensure robust error handling and clear user feedback.
 - **Concurrency**: Use goroutines and channels where appropriate for performance (e.g., parallel downloads/builds in future phases).
 - **Testing**: Maintain high test coverage with unit and integration tests.
+- **Documentation parity**: When changing CLI flags or runtime output, update examples and behavioral docs in README immediately.
 
 ## File Structure
 - `_assets/`: README media (e.g. hero image, before/after demo GIFs).
 - `cmd/root.go`: CLI command definitions (Cobra).
 - `pkg/`: Core logic and packages.
-  - `runner/`: Logic for resolving, building, caching, updating, and running Go packages.
+  - `runner/`: Logic for resolving, building, caching, updating, verbose logging, and running Go packages.
 - `main.go`: Entry point for the application, delegates to `cmd`.
 - `LICENSE`: Project license (MIT).
 - `Makefile`: Standard build, test, and release tasks.

@@ -12,6 +12,7 @@ import (
 func Execute() error {
 	var generate bool
 	var update bool
+	var verbose bool
 
 	var rootCmd = &cobra.Command{
 		Use:   "gox [gox-flags] <package>[@version] [args...]",
@@ -20,7 +21,7 @@ func Execute() error {
 It automatically downloads the specified package, compiles it into a local cache, and executes it.`,
 		Example: `  gox suapapa/gox --help
   gox github.com/suapapa/gox --help
-  gox golang.org/x/tools/cmd/goimports@latest -w main.go
+  gox -v golang.org/x/tools/cmd/goimports@latest -w main.go
   gox --generate foo/bar@v1.2.3
   gox -u golang.org/x/tools/cmd/goimports@latest -w main.go`,
 		Args: cobra.MinimumNArgs(1),
@@ -32,6 +33,7 @@ It automatically downloads the specified package, compiles it into a local cache
 			r, err := runner.NewRunner(
 				runner.WithGenerate(generate),
 				runner.WithUpdate(update),
+				runner.WithVerbose(verbose),
 			)
 			if err != nil {
 				return fmt.Errorf("initialization error: %w", err)
@@ -44,6 +46,7 @@ It automatically downloads the specified package, compiles it into a local cache
 
 	rootCmd.Flags().BoolVarP(&generate, "generate", "g", false, "run go generate before building")
 	rootCmd.Flags().BoolVarP(&update, "update", "u", false, "force reinstall/update even if the package is already cached")
+	rootCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "print version, cache path, binary path, and install/update steps")
 	rootCmd.Flags().SetInterspersed(false)
 
 	return rootCmd.Execute()

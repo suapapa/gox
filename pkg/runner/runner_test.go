@@ -115,3 +115,13 @@ func TestRunnerUpdateInstallsEvenWhenCached(t *testing.T) {
 		t.Fatalf("expected Update to be true")
 	}
 }
+
+func TestRunnerVerboseOption(t *testing.T) {
+	r, err := NewRunner(WithCacheDir(t.TempDir()), WithVerbose(true))
+	if err != nil {
+		t.Fatalf("NewRunner() error = %v", err)
+	}
+	if !r.cfg.Verbose {
+		t.Fatalf("expected Verbose to be true")
+	}
+}
