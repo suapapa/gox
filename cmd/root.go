@@ -17,9 +17,10 @@ func Execute() error {
 		Short: "Go version of npx",
 		Long: `gox (Go Execute) is a tool that allows you to run Go packages as commands without having to install them globally. 
 It automatically downloads the specified package, compiles it into a local cache, and executes it.`,
-		Example: `  gox github.com/suapapa/gox --help
+		Example: `  gox suapapa/gox --help
+  gox github.com/suapapa/gox --help
   gox golang.org/x/tools/cmd/goimports@latest -w main.go
-  gox --generate github.com/foo/bar@v1.2.3`,
+  gox --generate foo/bar@v1.2.3`,
 		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pkgWithVersion := args[0]

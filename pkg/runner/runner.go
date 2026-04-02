@@ -131,10 +131,10 @@ func (r *Runner) install(ctx context.Context, pkg, version, binDir string) error
 func (r *Runner) generateAndBuild(ctx context.Context, pkg, version, binPath string) error {
 	// For now, simpler implementation: run go generate in the current directory
 	// if it's a local path, or try to download and run if it's remote.
-	
+
 	// TODO: fully support remote go generate by downloading source to temp
 	fmt.Fprintf(r.cfg.Output, "gox: running go generate...\n")
-	
+
 	genCmd := exec.CommandContext(ctx, "go", "generate", "./...")
 	// If it's a local path, we might want to run it in that directory.
 	if isLocalPath(pkg) {
@@ -153,7 +153,7 @@ func (r *Runner) generateAndBuild(ctx context.Context, pkg, version, binPath str
 	if err := buildCmd.Run(); err != nil {
 		return fmt.Errorf("failed to build %s: %w", pkg, err)
 	}
-	
+
 	return nil
 }
 
@@ -184,7 +184,23 @@ func parsePackage(pkgWithVersion string) (string, string) {
 		pkg = pkgWithVersion[:idx]
 		version = pkgWithVersion[idx+1:]
 	}
+
+	pkg = normalizePackagePath(pkg)
+
 	return pkg, version
+}
+
+func normalizePackagePath(pkg string) string {
+	if pkg == "" || isLocalPath(pkg) || strings.Contains(pkg, ".") {
+		return pkg
+	}
+
+	parts := strings.Split(pkg, "/")
+	if len(parts) >= 2 {
+		return "github.com/" + pkg
+	}
+
+	return pkg
 }
 
 func getBinaryName(pkg string) string {

@@ -23,9 +23,17 @@ brew install suapapa/tools/gox
 # Run a tool at the latest version
 gox <package-path>[@version] [args...]
 
-# Example: Run golangci-lint
+# GitHub shortcuts: owner/repo paths implicitly expand to github.com/owner/repo
+gox suapapa/gox --help
+
+# Full import paths still work as-is
 gox github.com/golangci/golangci-lint/cmd/golangci-lint@latest --version
 ```
+
+### Package path resolution
+- `owner/repo` or `owner/repo/...` is treated as `github.com/owner/repo`.
+- Full import paths such as `github.com/...` or `golang.org/...` are used unchanged.
+- Local paths such as `./cmd/tool` are used unchanged.
 
 ## How it works
 `gox` uses `go install <package>@<version>` to download and build the tool into a managed cache directory (`os.UserCacheDir() + "/gox/bin/"`). Subsequent runs of the same package and version will use the cached binary.

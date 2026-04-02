@@ -12,6 +12,7 @@ This document provides guidelines and context for AI agents working on the `gox`
 ### Key Goals
 - Short, intuitive CLI: `gox <package> [args...]`.
 - Support for versioning: `gox <package>@<version>`.
+- Support GitHub shorthand resolution: `owner/repo` and `owner/repo/...` expand to `github.com/owner/repo...`.
 - Intelligent caching of built binaries in `os.UserCacheDir() + "/gox/bin/"`.
 - Automatic installation of missing tools into the managed cache.
 

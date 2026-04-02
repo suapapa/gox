@@ -35,6 +35,30 @@ func TestParsePackage(t *testing.T) {
 			wantPkg:        "v1.2.3",
 			wantVersion:    "latest",
 		},
+		{
+			name:           "Implicit GitHub owner repo path",
+			pkgWithVersion: "suapapa/gox",
+			wantPkg:        "github.com/suapapa/gox",
+			wantVersion:    "latest",
+		},
+		{
+			name:           "Implicit GitHub owner repo cmd path with version",
+			pkgWithVersion: "suapapa/gox/cmd/gox@v1.2.3",
+			wantPkg:        "github.com/suapapa/gox/cmd/gox",
+			wantVersion:    "v1.2.3",
+		},
+		{
+			name:           "Keep explicit host path unchanged",
+			pkgWithVersion: "golang.org/x/tools/cmd/goimports@latest",
+			wantPkg:        "golang.org/x/tools/cmd/goimports",
+			wantVersion:    "latest",
+		},
+		{
+			name:           "Keep local path unchanged",
+			pkgWithVersion: "./cmd/foo@latest",
+			wantPkg:        "./cmd/foo",
+			wantVersion:    "latest",
+		},
 	}
 
 	for _, tt := range tests {
