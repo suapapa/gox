@@ -21,7 +21,7 @@ This document provides guidelines and context for AI agents working on the `gox`
 ## Development Guidelines for Agents
 - **Go Best Practices**: Follow idiomatic Go patterns. Use `golang-pro` skill instructions for reference.
 - **CLI Framework**: The project uses `spf13/cobra` for the CLI structure.
-- **Error Handling**: Ensure robust error handling and clear user feedback.
+- **Error Handling**: Ensure robust error handling and clear user feedback. Prefer actionable remediation hints when failures are caused by missing prerequisites such as the Go toolchain or a missing `go` binary in `PATH`.
 - **Concurrency**: Use goroutines and channels where appropriate for performance (e.g., parallel downloads/builds in future phases).
 - **Testing**: Maintain high test coverage with unit and integration tests.
 - **Documentation parity**: When changing CLI flags or runtime output, update examples and behavioral docs in README immediately.

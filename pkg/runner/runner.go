@@ -2,6 +2,7 @@ package runner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -169,6 +170,9 @@ func (r *Runner) install(ctx context.Context, pkg, version, binDir string) error
 	cmd.Stdout = r.cfg.Output
 
 	if err := cmd.Run(); err != nil {
+		if errors.Is(err, exec.ErrNotFound) {
+			return fmt.Errorf("failed to install %s@%s: Go toolchain is not installed or `go` is not in PATH. Install Go first: https://go.dev/doc/install", pkg, version)
+		}
 		return fmt.Errorf("failed to install %s@%s: %w", pkg, version, err)
 	}
 

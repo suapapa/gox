@@ -17,6 +17,7 @@
 - Supports versioning (e.g., `@v1.2.3` or `@latest`).
 - Supports forced reinstall/update with `-u` / `--update`.
 - Supports verbose logging with `-v` / `--verbose` to show version, cache paths, binary path, cache hits, and install/update steps.
+- Prints a clearer help message when the Go toolchain is not installed or `go` is missing from `PATH`.
 
 ## Installation
 
