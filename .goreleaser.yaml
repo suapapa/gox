@@ -61,8 +61,8 @@ publishers:
   - name: macos-notarize
     ids: [ gox ]
     cmd: |
-      if [[ "{{ .Os }}" == "darwin" ]]; then
-        xcrun notarytool submit "{{ .Path }}" \
+      if [[ "{{ .ArtifactPath }}" == *.zip ]] && [[ "{{ .ArtifactPath }}" == *darwin* ]]; then
+        xcrun notarytool submit "{{ .ArtifactPath }}" \
           --issuer-id "{{ .Env.MACOS_NOTARY_ISSUER_ID }}" \
           --key-id "{{ .Env.MACOS_NOTARY_KEY_ID }}" \
           --key "/tmp/notary.p8" \
