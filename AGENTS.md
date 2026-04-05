@@ -39,7 +39,8 @@ This document provides guidelines and context for AI agents working on the `gox`
 
 ## macOS Code Signing & Notarization
 To ensure binaries run on macOS without security warnings, the release process is handled within the `notarize` block, which coordinates both signing and notarization:
-- **`MACOS_SIGN_IDENTITY`**: The common name or ID of your "Developer ID Application" certificate (e.g., `Developer ID Application: Your Name (YOUR_TEAM_ID)`).
+- **`MACOS_SIGN_P12`**: Your "Developer ID Application" certificate (exported as a `.p12` file and base64 encoded).
+- **`MACOS_SIGN_P12_PASSWORD`**: The password for the `.p12` certificate.
 - **`MACOS_NOTARY_ISSUER_ID`**: Your App Store Connect Issuer ID.
 - **`MACOS_NOTARY_KEY_ID`**: Your App Store Connect Key ID for the notarization key.
 - **`MACOS_NOTARY_KEY`**: The App Store Connect API Key contents (the content of the `.p8` file).
