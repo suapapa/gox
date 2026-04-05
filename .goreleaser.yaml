@@ -39,22 +39,6 @@ archives:
       - goos: windows
         formats: [zip]
 
-signs:
-  - id: macos-signing
-    # Only run codesign on darwin binaries. On other OSs, use 'true' which does nothing.
-    cmd: '{{ if eq .Os "darwin" }}codesign{{ else }}true{{ end }}'
-    args:
-      - "--sign"
-      - "{{ .Env.MACOS_SIGN_IDENTITY }}"
-      - "--force"
-      - "--options"
-      - "runtime"
-      - "--timestamp"
-      - "{{ .Path }}"
-    artifacts: binary
-    ids:
-      - gox
-
 notarize:
   macos:
     - enabled: '{{ isEnvSet "MACOS_NOTARY_KEY" }}'
@@ -80,9 +64,8 @@ homebrew_casks:
   - repository:
       owner: suapapa
       name: homebrew-tools
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     name: gox
-    binaries:
-      - gox
     homepage: "https://github.com/suapapa/gox"
     description: "Go version of npx - Execute Go binaries directly from source"
     commit_msg_template: "Brew cask update for {{ .ProjectName }} version {{ .Tag }}"

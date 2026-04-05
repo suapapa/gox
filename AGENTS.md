@@ -38,11 +38,12 @@ This document provides guidelines and context for AI agents working on the `gox`
 - `gox_plan.md`: The initial project implementation plan.
 
 ## macOS Code Signing & Notarization
-To ensure binaries run on macOS without security warnings, the release process requires:
+To ensure binaries run on macOS without security warnings, the release process is handled within the `notarize` block, which coordinates both signing and notarization:
 - **`MACOS_SIGN_IDENTITY`**: The common name or ID of your "Developer ID Application" certificate (e.g., `Developer ID Application: Your Name (YOUR_TEAM_ID)`).
 - **`MACOS_NOTARY_ISSUER_ID`**: Your App Store Connect Issuer ID.
 - **`MACOS_NOTARY_KEY_ID`**: Your App Store Connect Key ID for the notarization key.
 - **`MACOS_NOTARY_KEY`**: The App Store Connect API Key contents (the content of the `.p8` file).
+- **`HOMEBREW_TAP_GITHUB_TOKEN`**: A Personal Access Token (PAT) with `repo` scope to update the [suapapa/homebrew-tools](https://github.com/suapapa/homebrew-tools) repository.
 
 ## Workflow
 1.  **Analyze**: Understand the current state of the codebase.
