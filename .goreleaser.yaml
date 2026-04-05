@@ -60,13 +60,13 @@ signs:
 publishers:
   - name: macos-notarize
     ids: [ gox ]
-    cmd: >-
-      bash -c 'if [[ "{{ .ArtifactPath }}" == *.zip ]] && [[ "{{ .Os }}" == "darwin" ]]; then
-        xcrun notarytool submit "{{ .ArtifactPath }}"
-        --issuer-id "{{ .Env.MACOS_NOTARY_ISSUER_ID }}"
-        --key-id "{{ .Env.MACOS_NOTARY_KEY_ID }}"
-        --key "/tmp/notary.p8"
-        --wait;
+    cmd: |
+      bash -c 'if [[ "{{ .ArtifactPath }}" == *.zip ]] && [[ "{{ .Os }}" == "darwin" ]]; then \
+        xcrun notarytool submit "{{ .ArtifactPath }}" \
+          --issuer "{{ .Env.MACOS_NOTARY_ISSUER_ID }}" \
+          --key-id "{{ .Env.MACOS_NOTARY_KEY_ID }}" \
+          --key "/tmp/notary.p8" \
+          --wait; \
       fi'
 
 changelog:
