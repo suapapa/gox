@@ -37,6 +37,13 @@ This document provides guidelines and context for AI agents working on the `gox`
 - `.goreleaser.yaml`: GoReleaser configuration for GitHub releases.
 - `gox_plan.md`: The initial project implementation plan.
 
+## macOS Code Signing & Notarization
+To ensure binaries run on macOS without security warnings, the release process requires:
+- **`APPLE_ID`**: Your Apple Developer account email.
+- **`APPLE_PASSWORD`**: An app-specific password generated from [appleid.apple.com](https://appleid.apple.com).
+- **`APPLE_TEAM_ID`**: Your Team ID from the Apple Developer portal.
+- **`MACOS_SIGN_IDENTITY`**: The common name or ID of your "Developer ID Application" certificate (e.g., `Developer ID Application: Your Name (YOUR_TEAM_ID)`).
+
 ## Workflow
 1.  **Analyze**: Understand the current state of the codebase.
 2.  **Plan**: Draft an implementation plan if the task is complex.

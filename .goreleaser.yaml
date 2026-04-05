@@ -16,7 +16,8 @@ before:
     # - go generate ./...
 
 builds:
-  - env:
+  - id: gox
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -37,6 +38,32 @@ archives:
     format_overrides:
       - goos: windows
         formats: [zip]
+
+signs:
+  - id: macos-signing
+    cmd: codesign
+    args:
+      - "--sign"
+      - "{{ .Env.MACOS_SIGN_IDENTITY }}"
+      - "--force"
+      - "--options"
+      - "runtime"
+      - "--timestamp"
+      - "{{ .Path }}"
+    artifacts: binary
+    filters:
+      include:
+        - "^darwin"
+
+notarize:
+  macos:
+    - enabled: '{{ isEnvSet "APPLE_PASSWORD" }}'
+      wait: true
+      error_on_timeout: true
+      app_store_connect:
+        apple_id: "{{ .Env.APPLE_ID }}"
+        password: "{{ .Env.APPLE_PASSWORD }}"
+        team_id: "{{ .Env.APPLE_TEAM_ID }}"
 
 changelog:
   sort: asc
