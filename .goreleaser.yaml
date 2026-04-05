@@ -25,7 +25,8 @@ builds:
       - darwin
 
 archives:
-  - formats: [tar.gz]
+  - id: gox
+    formats: [tar.gz]
     # this name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_
@@ -34,25 +35,39 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
+    # use zip for windows and macOS archives (notarytool prefers zip)
     format_overrides:
       - goos: windows
         formats: [zip]
+      - goos: darwin
+        formats: [zip]
 
-notarize:
-  macos:
-    - enabled: '{{ isEnvSet "MACOS_NOTARY_KEY" }}'
-      ids:
-        - gox
-      sign:
-        certificate: "{{ .Env.MACOS_SIGN_P12 }}"
-        password: "{{ .Env.MACOS_SIGN_P12_PASSWORD }}"
-      notarize:
-        issuer_id: "{{ .Env.MACOS_NOTARY_ISSUER_ID }}"
-        key_id: "{{ .Env.MACOS_NOTARY_KEY_ID }}"
-        key: "{{ .Env.MACOS_NOTARY_KEY }}"
-        wait: true
-        timeout: 20m
+signs:
+  - id: macos-signing
+    cmd: codesign
+    args:
+      - "--sign"
+      - "{{ .Env.MACOS_SIGN_IDENTITY }}"
+      - "--force"
+      - "--options"
+      - "runtime"
+      - "--timestamp"
+      - "{{ .Path }}"
+    artifacts: binary
+    ids:
+      - gox
+
+publishers:
+  - name: macos-notarize
+    ids: [ gox ]
+    cmd: |
+      if [[ "{{ .Os }}" == "darwin" ]]; then
+        xcrun notarytool submit "{{ .Path }}" \
+          --issuer-id "{{ .Env.MACOS_NOTARY_ISSUER_ID }}" \
+          --key-id "{{ .Env.MACOS_NOTARY_KEY_ID }}" \
+          --key "/tmp/notary.p8" \
+          --wait
+      fi
 
 changelog:
   sort: asc

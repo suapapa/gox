@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   goreleaser:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,8 +23,17 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      - name: Import Certificate
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.MACOS_SIGN_P12 }}
+          p12-password: ${{ secrets.MACOS_SIGN_P12_PASSWORD }}
+
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Create Notary Key File
+        run: echo "${{ secrets.MACOS_NOTARY_KEY }}" > /tmp/notary.p8
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
@@ -37,6 +46,8 @@ jobs:
           HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
           MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
           MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
-          MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
           MACOS_SIGN_P12: ${{ secrets.MACOS_SIGN_P12 }}
           MACOS_SIGN_P12_PASSWORD: ${{ secrets.MACOS_SIGN_P12_PASSWORD }}
+          # We also need the identity name for codesign and the key for notarytool
+          MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+          MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
