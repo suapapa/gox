@@ -41,7 +41,8 @@ archives:
 
 signs:
   - id: macos-signing
-    cmd: codesign
+    # Only run codesign on darwin binaries. On other OSs, use 'true' which does nothing.
+    cmd: '{{ if eq .Os "darwin" }}codesign{{ else }}true{{ end }}'
     args:
       - "--sign"
       - "{{ .Env.MACOS_SIGN_IDENTITY }}"
@@ -51,19 +52,22 @@ signs:
       - "--timestamp"
       - "{{ .Path }}"
     artifacts: binary
-    filters:
-      include:
-        - "^darwin"
+    ids:
+      - gox
 
 notarize:
   macos:
-    - enabled: '{{ isEnvSet "APPLE_PASSWORD" }}'
-      wait: true
-      error_on_timeout: true
-      app_store_connect:
-        apple_id: "{{ .Env.APPLE_ID }}"
-        password: "{{ .Env.APPLE_PASSWORD }}"
-        team_id: "{{ .Env.APPLE_TEAM_ID }}"
+    - enabled: '{{ isEnvSet "MACOS_NOTARY_KEY" }}'
+      ids:
+        - gox
+      sign:
+        certificate: "{{ .Env.MACOS_SIGN_IDENTITY }}"
+      notarize:
+        issuer_id: "{{ .Env.MACOS_NOTARY_ISSUER_ID }}"
+        key_id: "{{ .Env.MACOS_NOTARY_KEY_ID }}"
+        key: "{{ .Env.MACOS_NOTARY_KEY }}"
+        wait: true
+        timeout: 20m
 
 changelog:
   sort: asc

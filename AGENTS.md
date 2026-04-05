@@ -39,10 +39,10 @@ This document provides guidelines and context for AI agents working on the `gox`
 
 ## macOS Code Signing & Notarization
 To ensure binaries run on macOS without security warnings, the release process requires:
-- **`APPLE_ID`**: Your Apple Developer account email.
-- **`APPLE_PASSWORD`**: An app-specific password generated from [appleid.apple.com](https://appleid.apple.com).
-- **`APPLE_TEAM_ID`**: Your Team ID from the Apple Developer portal.
 - **`MACOS_SIGN_IDENTITY`**: The common name or ID of your "Developer ID Application" certificate (e.g., `Developer ID Application: Your Name (YOUR_TEAM_ID)`).
+- **`MACOS_NOTARY_ISSUER_ID`**: Your App Store Connect Issuer ID.
+- **`MACOS_NOTARY_KEY_ID`**: Your App Store Connect Key ID for the notarization key.
+- **`MACOS_NOTARY_KEY`**: The App Store Connect API Key contents (the content of the `.p8` file).
 
 ## Workflow
 1.  **Analyze**: Understand the current state of the codebase.
