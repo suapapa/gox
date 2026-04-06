@@ -22,10 +22,18 @@ builds:
     goos:
       - linux
       - windows
+  - id: gox-darwin
+    binary: gox
+    env:
+      - CGO_ENABLED=0
+    goos:
       - darwin
 
 archives:
   - id: gox
+    ids:
+      - gox
+      - gox-darwin
     formats: [tar.gz]
     # this name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
@@ -42,7 +50,7 @@ archives:
       - goos: darwin
         formats: [zip]
 
-signs:
+binary_signs:
   - id: macos-signing
     cmd: codesign
     args:
@@ -52,10 +60,10 @@ signs:
       - "--options"
       - "runtime"
       - "--timestamp"
-      - "{{ .Path }}"
+      - "${artifact}"
     artifacts: binary
     ids:
-      - gox
+      - gox-darwin
 
 publishers:
   - name: macos-notarize
