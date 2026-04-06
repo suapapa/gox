@@ -60,7 +60,7 @@ binary_signs:
       - "--options"
       - "runtime"
       - "--timestamp"
-      - "${artifact}"
+      - "{{ .Path }}"
     artifacts: binary
     ids:
       - gox-darwin
