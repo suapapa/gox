@@ -28,6 +28,9 @@ builds:
       - CGO_ENABLED=0
     goos:
       - darwin
+    hooks:
+      post:
+        - codesign --sign "{{ .Env.MACOS_SIGN_IDENTITY }}" --force --options runtime --timestamp "{{ .Path }}"
 
 archives:
   - id: gox
@@ -50,20 +53,7 @@ archives:
       - goos: darwin
         formats: [zip]
 
-binary_signs:
-  - id: macos-signing
-    cmd: codesign
-    args:
-      - "--sign"
-      - "{{ .Env.MACOS_SIGN_IDENTITY }}"
-      - "--force"
-      - "--options"
-      - "runtime"
-      - "--timestamp"
-      - "{{ .Path }}"
-    artifacts: binary
-    ids:
-      - gox-darwin
+
 
 publishers:
   - name: macos-notarize
