@@ -30,7 +30,7 @@ builds:
       - darwin
     hooks:
       post:
-        - codesign --sign "{{ .Env.MACOS_SIGN_IDENTITY }}" --force --options runtime --timestamp "{{ .Path }}"
+        - codesign --sign "Developer ID Application" --force --options runtime --timestamp "{{ .Path }}"
 
 archives:
   - id: gox
