@@ -240,8 +240,8 @@ func (r *Runner) execute(ctx context.Context, binPath string, args []string) err
 
 	if err := cmd.Run(); err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
-			// Sub-process exit error is propagated up as-is.
-			return exitErr
+			// Sub-process exit error is wrapped to indicate it's a command failure
+			return fmt.Errorf("command failed: %w", exitErr)
 		}
 		return fmt.Errorf("failed to execute binary %s: %w", binPath, err)
 	}

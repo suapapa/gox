@@ -40,7 +40,12 @@ It automatically downloads the specified package, compiles it into a local cache
 			}
 
 			// Execute using background context.
-			return r.Run(context.Background(), pkgWithVersion, pkgArgs)
+			err = r.Run(context.Background(), pkgWithVersion, pkgArgs)
+			if err != nil {
+				// If the command itself failed, don't show the help message.
+				cmd.SilenceUsage = true
+			}
+			return err
 		},
 	}
 
