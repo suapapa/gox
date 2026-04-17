@@ -23,6 +23,7 @@ type Config struct {
 	Generate bool      // Run go generate before build
 	Update   bool      // Force reinstall even when cached binary exists
 	Verbose  bool      // Print cache/version/binary details and install steps
+	Env      []string  // Environment variables for execution
 }
 
 // Runner implements the Go package runner logic.
@@ -32,6 +33,13 @@ type Runner struct {
 
 // Option is a functional option for configuring a Runner.
 type Option func(*Config)
+
+// WithEnv sets the environment variables for execution.
+func WithEnv(env []string) Option {
+	return func(c *Config) {
+		c.Env = env
+	}
+}
 
 // WithCacheDir sets the cache directory.
 func WithCacheDir(dir string) Option {
@@ -142,7 +150,11 @@ func (r *Runner) install(ctx context.Context, pkg, version, binDir string) error
 	if r.cfg.Update {
 		action = "updating"
 	}
-	fmt.Fprintf(r.cfg.Output, "gox: %s %s@%s...\n", action, pkg, version)
+	pkgWithVer := pkg
+	if version != "" {
+		pkgWithVer = pkg + "@" + version
+	}
+	fmt.Fprintf(r.cfg.Output, "gox: %s %s...\n", action, pkgWithVer)
 
 	binName := getBinaryName(pkg)
 	if binName == "." || binName == ".." {
@@ -160,20 +172,20 @@ func (r *Runner) install(ctx context.Context, pkg, version, binDir string) error
 
 	if r.cfg.Verbose {
 		fmt.Fprintf(r.cfg.Output, "gox: step 1/3 ensure cache directory exists\n")
-		fmt.Fprintf(r.cfg.Output, "gox: step 2/3 run GOBIN=%s go install %s@%s\n", binDir, pkg, version)
+		fmt.Fprintf(r.cfg.Output, "gox: step 2/3 run GOBIN=%s go install %s\n", binDir, pkgWithVer)
 	}
 
 	// Using exec.CommandContext to allow for context cancellation/timeout.
-	cmd := exec.CommandContext(ctx, "go", "install", pkg+"@"+version)
+	cmd := exec.CommandContext(ctx, "go", "install", pkgWithVer)
 	cmd.Env = append(os.Environ(), "GOBIN="+binDir)
 	cmd.Stderr = r.cfg.Output
 	cmd.Stdout = r.cfg.Output
 
 	if err := cmd.Run(); err != nil {
 		if errors.Is(err, exec.ErrNotFound) {
-			return fmt.Errorf("failed to install %s@%s: Go toolchain is not installed or `go` is not in PATH. Install Go first: https://go.dev/doc/install", pkg, version)
+			return fmt.Errorf("failed to install %s: Go toolchain is not installed or `go` is not in PATH. Install Go first: https://go.dev/doc/install", pkgWithVer)
 		}
-		return fmt.Errorf("failed to install %s@%s: %w", pkg, version, err)
+		return fmt.Errorf("failed to install %s: %w", pkgWithVer, err)
 	}
 
 	if r.cfg.Verbose {
@@ -238,6 +250,10 @@ func (r *Runner) execute(ctx context.Context, binPath string, args []string) err
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
+	if len(r.cfg.Env) > 0 {
+		cmd.Env = append(os.Environ(), r.cfg.Env...)
+	}
+
 	if err := cmd.Run(); err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			// Sub-process exit error is wrapped to indicate it's a command failure
@@ -250,10 +266,14 @@ func (r *Runner) execute(ctx context.Context, binPath string, args []string) err
 
 func parsePackage(pkgWithVersion string) (string, string) {
 	pkg := pkgWithVersion
-	version := "latest"
+	version := ""
 	if idx := strings.LastIndex(pkgWithVersion, "@"); idx != -1 {
 		pkg = pkgWithVersion[:idx]
 		version = pkgWithVersion[idx+1:]
+	}
+
+	if version == "" && !isLocalPath(pkg) {
+		version = "latest"
 	}
 
 	pkg = normalizePackagePath(pkg)

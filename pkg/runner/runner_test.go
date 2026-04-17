@@ -125,3 +125,15 @@ func TestRunnerVerboseOption(t *testing.T) {
 		t.Fatalf("expected Verbose to be true")
 	}
 }
+
+func TestRunnerEnvOption(t *testing.T) {
+	envs := []string{"ENV1=VAL1", "ENV2=VAL2"}
+	r, err := NewRunner(WithCacheDir(t.TempDir()), WithEnv(envs))
+	if err != nil {
+		t.Fatalf("NewRunner() error = %v", err)
+	}
+	if len(r.cfg.Env) != 2 || r.cfg.Env[0] != "ENV1=VAL1" || r.cfg.Env[1] != "ENV2=VAL2" {
+		t.Fatalf("expected Env to be %v, got %v", envs, r.cfg.Env)
+	}
+}
+
