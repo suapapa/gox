@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gox - Go version of npx</title>
+    <meta name="description"
+        content="gox is a Go tool that allows you to execute Go binaries directly from their source repositories, without global installation.">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <header class="hero">
+            <div class="hero-content">
+                <span class="badge">Go version of npx</span>
+                <h1>Run Go tools <br><span style="color: var(--color-accent);">without installation</span></h1>
+                <p>Execute Go binaries directly from source repositories. Fast, cached, and version-aware. Just like
+                    npx, but for the Go ecosystem.</p>
+
+                <div class="cta-group">
+                    <a href="#install" class="btn btn-primary">Get Started</a>
+                    <a href="https://github.com/suapapa/gox" class="btn btn-secondary">View on GitHub</a>
+                </div>
+            </div>
+
+            <div class="demo-container">
+                <img src="_assets/gox.gif" alt="gox demo" class="demo-img">
+            </div>
+        </header>
+
+        <!-- Features Section -->
+        <section id="features">
+            <h2 class="section-title">Why gox?</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>No Global Bloat</h3>
+                    <p>Run any Go tool without cluttering your system's global bin directory.</p>
+                </div>
+                <div class="card">
+                    <h3>Version Support</h3>
+                    <p>Execute specific versions using <code>@v1.2.3</code> or <code>@latest</code> tags effortlessly.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3>Smart Caching</h3>
+                    <p>Built binaries are cached in your user directory for instant subsequent runs.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section id="install">
+            <h2 class="section-title">Installation</h2>
+
+            <h3>Scripted Install (Recommended)</h3>
+            <p>One command to rule them all. Works on macOS and Linux.</p>
+            <div class="code-block">
+                <button class="copy-btn">Copy</button>
+                <pre>curl -fsSL https://raw.githubusercontent.com/suapapa/gox/main/scripts/install.sh | sh</pre>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-lg);">Manual Install</h3>
+            <p>Using the standard Go toolchain.</p>
+            <div class="code-block">
+                <button class="copy-btn">Copy</button>
+                <pre>go install github.com/suapapa/gox@latest</pre>
+            </div>
+            <p style="font-size: 0.875rem; margin-top: var(--spacing-sm);">Make sure <code>$(go env GOPATH)/bin</code>
+                is in your <code>PATH</code>.</p>
+        </section>
+
+        <!-- Usage Section -->
+        <section id="usage">
+            <h2 class="section-title">Quick Usage</h2>
+            <div class="code-block">
+                <pre># Run a tool at latest version
+gox owner/repo[@version] [args...]
+
+# Example: Run golangci-lint
+gox golangci/golangci-lint/v2/cmd/golangci-lint --version</pre>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 Homin Lee <a href="mailto:i@homin.dev">i@homin.dev</a>. Released under the MIT License.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const pre = button.nextElementSibling;
+                const text = pre.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = button.innerText;
+                    button.innerText = 'Copied!';
+                    button.style.color = 'var(--color-accent)';
+                    setTimeout(() => {
+                        button.innerText = originalText;
+                        button.style.color = '';
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

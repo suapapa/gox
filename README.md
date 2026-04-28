@@ -1,5 +1,8 @@
 # gox: Go version of npx
 
+[![Website](https://img.shields.io/badge/website-gox-green)](https://suapapa.github.io/gox/)
+
+
 ![gox](_assets/gox.webp)
 
 `gox` is a Go tool that allows you to execute Go binaries directly from their source repositories, without global installation. It provides a similar experience to `npx` in the Node.js ecosystem.
@@ -58,7 +61,7 @@ gox -v <package-path>[@version] [args...]
 gox suapapa/gox --help
 
 # Full import paths still work as-is
-gox github.com/golangci/golangci-lint/cmd/golangci-lint@latest --version
+gox github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest --version
 ```
 
 ## Verbose output
