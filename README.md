@@ -19,13 +19,29 @@
 - Supports verbose logging with `-v` / `--verbose` to show version, cache paths, binary path, cache hits, and install/update steps.
 - Prints a clearer help message when the Go toolchain is not installed or `go` is missing from `PATH`.
 
+## Prerequisites
+
+`gox` requires the [Go toolchain](https://go.dev/doc/install) to be installed and available in your `PATH`.
+
 ## Installation
 
-### Homebrew
+### Scripted Install
+
 ```bash
-brew install --cask suapapa/tools/gox
+curl -fsSL https://raw.githubusercontent.com/suapapa/gox/main/scripts/install.sh | sh
 ```
-(Alternatively: `brew tap suapapa/tools && brew install --cask gox`)
+
+### Manual Install
+
+```bash
+go install github.com/suapapa/gox@latest
+```
+
+Make sure `$(go env GOPATH)/bin` is in your `PATH` to execute `gox`. You can add it by adding the following line to your shell configuration file (e.g., `.zshrc` or `.bashrc`):
+
+```bash
+export PATH="$(go env GOPATH)/bin:$PATH"
+```
 
 ## Usage
 ```bash
