@@ -110,4 +110,4 @@ AI agents and contributors should refer to [AGENTS.md](file:///Users/suapapa/ws_
 You can use the provided `Makefile` for common tasks:
 - `make build`: Build the binary locally.
 - `make test`: Run tests.
-- `make snapshot`: Create a local snapshot release using `goreleaser`.
+- `make install`: Install into `$(go env GOPATH)/bin` with `go install ./...`.

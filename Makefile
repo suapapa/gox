@@ -26,15 +26,3 @@ clean:
 
 install:
 	$(GOINSTALL) ./...
-
-# GoReleaser targets
-.PHONY: release-check snapshot release
-
-release-check:
-	goreleaser check
-
-snapshot:
-	goreleaser release --snapshot --clean
-
-release:
-	goreleaser release --clean

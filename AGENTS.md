@@ -33,18 +33,8 @@ This document provides guidelines and context for AI agents working on the `gox`
   - `runner/`: Logic for resolving, building, caching, updating, verbose logging, and running Go packages.
 - `main.go`: Entry point for the application, delegates to `cmd`.
 - `LICENSE`: Project license (MIT).
-- `Makefile`: Standard build, test, and release tasks.
-- `.goreleaser.yaml`: GoReleaser configuration for GitHub releases.
+- `Makefile`: Standard build, test, and local install tasks.
 - `gox_plan.md`: The initial project implementation plan.
-
-## macOS Code Signing & Notarization
-To ensure binaries run on macOS without security warnings, the release process is handled within the `notarize` block, which coordinates both signing and notarization:
-- **`MACOS_SIGN_P12`**: Your "Developer ID Application" certificate (exported as a `.p12` file and base64 encoded).
-- **`MACOS_SIGN_P12_PASSWORD`**: The password for the `.p12` certificate.
-- **`MACOS_NOTARY_ISSUER_ID`**: Your App Store Connect Issuer ID.
-- **`MACOS_NOTARY_KEY_ID`**: Your App Store Connect Key ID for the notarization key.
-- **`MACOS_NOTARY_KEY`**: The App Store Connect API Key contents (the content of the `.p8` file).
-- **`HOMEBREW_TAP_GITHUB_TOKEN`**: A Personal Access Token (PAT) with `repo` scope to update the [suapapa/homebrew-tools](https://github.com/suapapa/homebrew-tools) repository.
 
 ## Workflow
 1.  **Analyze**: Understand the current state of the codebase.
@@ -53,12 +43,5 @@ To ensure binaries run on macOS without security warnings, the release process i
 4.  **Verify**: Run tests and verify the changes manually.
 5.  **Document**: Update `README.md` and `AGENTS.md` as required.
 
-## Release Workflow
-The project uses `goreleaser` for automated GitHub releases and Homebrew cask management.
-
-- **Check config**: `make release-check`
-- **Snapshot release (local test)**: `make snapshot`
-- **Full release (requires tag and GITHUB_TOKEN)**: `make release`
-
-> [!NOTE]
-> The release process automatically pushes an updated Homebrew cask to [suapapa/homebrew-tools](https://github.com/suapapa/homebrew-tools). The generated cask conflicts with the legacy `gox` formula during the migration away from GoReleaser `brews`.
+## Distribution
+End users install from source with the Go toolchain, for example `go install github.com/suapapa/gox@latest` (see `README.md`). Versioning follows Go module tags on the default branch; there is no separate binary release pipeline in this repository.

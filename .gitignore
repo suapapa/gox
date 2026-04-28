@@ -1,6 +1,6 @@
 .gitignore
 
-# Added by goreleaser init:
+# Local build / artifact output
 dist/
 
 .agents/
